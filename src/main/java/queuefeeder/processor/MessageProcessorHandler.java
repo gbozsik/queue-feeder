@@ -49,10 +49,11 @@ public class MessageProcessorHandler {
         List<MessageProcessor> messageProcessors = new ArrayList<>();
         int startedTasksNumber = 0;
         for (int taskPerProcess = 0; taskPerProcess < messageTypePerProcessNumberList.size(); taskPerProcess++) {
-            int lastCharacterPosition = startedTasksNumber + messageTypePerProcessNumberList.get(taskPerProcess);
+            int messageTypeQuantityForProcess = messageTypePerProcessNumberList.get(taskPerProcess);
+            int lastCharacterPosition = startedTasksNumber + messageTypeQuantityForProcess;
             List<Character> charactersForAProcess = messagePrefixes.subList(startedTasksNumber, lastCharacterPosition);
             messageProcessors.add(new MessageProcessor(charactersForAProcess));
-            startedTasksNumber += lastCharacterPosition;
+            startedTasksNumber += messageTypeQuantityForProcess;
         }
         return messageProcessors;
     }
