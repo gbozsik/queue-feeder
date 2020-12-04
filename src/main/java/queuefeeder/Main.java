@@ -2,7 +2,7 @@ package queuefeeder;
 
 import lombok.extern.slf4j.Slf4j;
 import queuefeeder.processor.MessageProcessor;
-import queuefeeder.processor.MessageProcessorHandler;
+import queuefeeder.processor.MessageProcessorProvider;
 import queuefeeder.producer.MessageProducerHandler;
 
 import java.util.List;
@@ -13,20 +13,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class Main {
 
-    private ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(7);
-    private LinkedBlockingQueue<String> stringLinkedBlockingQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<String> stringLinkedBlockingQueue;
+    int numberOfMessageProducer = 7;
+    int numberOfMessageProcessor = 3;
+    int messagesPerMessageType = 5;
+    int arrayBlockingQueueCapacity = 7;
+    String poisonPill = "stop";
 
     public static void main(String[] args) {
         log.info("main starts");
-        int numberOfMessageProducer = 7;
-        int numberOfMessageProcessor = 3;
-        int messagesPerMessageType = 5;
-        String poisonPill = "stop";
-        new Main().feedingHandler(numberOfMessageProducer, numberOfMessageProcessor, messagesPerMessageType, poisonPill);
+        new Main().feedingHandler();
     }
 
-    private void feedingHandler(int numberOfMessageProducer, int numberOfMessageProcessors, int messagesPerMessageType, String poisonPill) {
-        if (numberOfMessageProcessors == 0) {
+    private void feedingHandler() {
+        ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(arrayBlockingQueueCapacity);
+        stringLinkedBlockingQueue = new LinkedBlockingQueue<>();
+        if (numberOfMessageProcessor == 0) {
             throw new IllegalArgumentException("NumberOfMessageProcessors can not be 0");
         }
         if (numberOfMessageProducer == 0) {
@@ -37,7 +39,7 @@ public class Main {
         messageProducerHandler.produceMessages();
         List<Character> messageTypes = messageProducerHandler.getPrefixes();
 
-        List<MessageProcessor> messageProcessors = new MessageProcessorHandler(numberOfMessageProcessors, messageTypes).getMessageProcessorList();
+        List<MessageProcessor> messageProcessors = MessageProcessorProvider.getMessageProcessorList(numberOfMessageProcessor, messageTypes);
 
         Dispatcher dispatcher = new Dispatcher(arrayBlockingQueue, stringLinkedBlockingQueue, messageProcessors);
         dispatcher.dispatch(poisonPill, numberOfMessageProducer);
@@ -53,7 +55,7 @@ public class Main {
         stringBuilder.append("\nContent of LinkedQueue: \n");
         stringLinkedBlockingQueue.iterator().forEachRemaining(selectedTabName -> {
             count.getAndIncrement();
-            stringBuilder.append(selectedTabName + " ");
+            stringBuilder.append(selectedTabName).append(" ");
         });
         log.info(stringBuilder.toString());
         messageProcessors.forEach(messageProcessor ->

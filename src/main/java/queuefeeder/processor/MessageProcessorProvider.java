@@ -3,33 +3,28 @@ package queuefeeder.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageProcessorHandler {
+public class MessageProcessorProvider {
 
-    private final int numberOfMessageProcessors;
-    private final List<Character> messageTypes;
-
-    public MessageProcessorHandler(int numberOfMessageProcessors, List<Character> messageTypes) {
-        this.numberOfMessageProcessors = numberOfMessageProcessors;
-        this.messageTypes = messageTypes;
+    public MessageProcessorProvider() {
     }
 
-    public List<MessageProcessor> getMessageProcessorList() {
+    public static List<MessageProcessor> getMessageProcessorList(int numberOfMessageProcessors, List<Character> messageTypes) {
         List<Integer> messageTypeQuantityPerProcessList = getMessageTypeQuantityPerProcessList(messageTypes.size(), numberOfMessageProcessors);
         List<MessageProcessor> messageProcessors = getMessageProcessors(messageTypeQuantityPerProcessList, messageTypes);
         new MessageProcessorExecutorService().startProcessorsOnDifferentThreads(messageProcessors);
         return messageProcessors;
     }
 
-    private List<Integer> getMessageTypeQuantityPerProcessList(int messageType, int numberProcesses) {
+    static List<Integer> getMessageTypeQuantityPerProcessList(int messageTypesQuantity, int numberProcesses) {
         List<Integer> messageTypeQuantityPerProcessList = new ArrayList<>();
 
-        if (messageType == 0) {
+        if (messageTypesQuantity == 0) {
             throw new IllegalArgumentException("No produced message");
         }
         if (numberProcesses == 0) {
             throw new IllegalArgumentException("Number of processors can not be null");
         }
-        int threadPerProcess = messageType / numberProcesses;
+        int threadPerProcess = messageTypesQuantity / numberProcesses;
         int startedThreads = 0;
         for (int i = 0; i < numberProcesses; i++) {
             int tasksPerProcess;
@@ -39,13 +34,13 @@ public class MessageProcessorHandler {
                 messageTypeQuantityPerProcessList.add(tasksPerProcess);
                 continue;
             }
-            tasksPerProcess = messageType - startedThreads;
+            tasksPerProcess = messageTypesQuantity - startedThreads;
             messageTypeQuantityPerProcessList.add(tasksPerProcess);
         }
         return messageTypeQuantityPerProcessList;
     }
 
-    private List<MessageProcessor> getMessageProcessors(List<Integer> messageTypePerProcessNumberList, List<Character> messagePrefixes) {
+    static List<MessageProcessor> getMessageProcessors(List<Integer> messageTypePerProcessNumberList, List<Character> messagePrefixes) {
         List<MessageProcessor> messageProcessors = new ArrayList<>();
         int startedTasksNumber = 0;
         for (int taskPerProcess = 0; taskPerProcess < messageTypePerProcessNumberList.size(); taskPerProcess++) {
