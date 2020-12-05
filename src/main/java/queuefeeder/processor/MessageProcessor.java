@@ -27,7 +27,7 @@ public class MessageProcessor {
 
     public String getPrefixesInString() {
         StringBuilder stringBuilder = new StringBuilder();
-        prefixes.forEach(character -> stringBuilder.append(character + ", "));
+        prefixes.forEach(character -> stringBuilder.append(character).append(", "));
         return stringBuilder.toString();
     }
 }
