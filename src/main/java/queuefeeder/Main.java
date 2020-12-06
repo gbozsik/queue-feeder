@@ -3,13 +3,11 @@ package queuefeeder;
 import lombok.extern.slf4j.Slf4j;
 import queuefeeder.dispatcher.Dispatcher;
 import queuefeeder.dispatcher.DispatcherImpl;
-import queuefeeder.processor.MessageProcessor;
 import queuefeeder.processor.MessageProcessorProvider;
 import queuefeeder.processor.MessageProcessorProviderImpl;
 import queuefeeder.producer.MessageProducerHandler;
 import queuefeeder.producer.MessageProducerHandlerImpl;
 
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,22 +23,34 @@ public class Main {
 
     public static void main(String[] args) {
         ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(arrayBlockingQueueCapacity);
-        LinkedBlockingQueue<String> stringLinkedBlockingQueue = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<String> linkedBlockingQueue = new LinkedBlockingQueue<>();
 
-        MessageProducerHandler messageProducerHandler = new MessageProducerHandlerImpl(numberOfMessageProducer, arrayBlockingQueue, messagesPerMessageType, poisonPill);
-        Dispatcher dispatcher = new DispatcherImpl(arrayBlockingQueue, stringLinkedBlockingQueue);
+        MessageProducerHandler messageProducerHandler = new MessageProducerHandlerImpl();
+        Dispatcher dispatcher = new DispatcherImpl();
         MessageProcessorProvider messageProcessorProvider = new MessageProcessorProviderImpl();
 
         FeedingParams feedingParams = FeedingParams.builder()
                 .numberOfMessageProducer(numberOfMessageProducer)
                 .numberOfMessageProcessor(numberOfMessageProcessor)
                 .messagesPerMessageType(messagesPerMessageType)
-                .arrayBlockingQueueCapacity(arrayBlockingQueueCapacity)
                 .poisonPill(poisonPill)
+                .arrayBlockingQueue(arrayBlockingQueue)
+                .linkedBlockingQueue(linkedBlockingQueue)
                 .build();
 
         QueueFeeder queueFeeder = new QueueFeeder(messageProducerHandler, dispatcher, messageProcessorProvider);
         queueFeeder.feed(feedingParams);
-        queueFeeder.dumpResults(dispatcher);
+        dumpResults(linkedBlockingQueue);
+    }
+
+    private static void dumpResults(LinkedBlockingQueue<String> linkedBlockingQueue) {
+        AtomicInteger count = new AtomicInteger();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\nContent of LinkedQueue: \n");
+        linkedBlockingQueue.iterator().forEachRemaining(selectedTabName -> {
+            count.getAndIncrement();
+            stringBuilder.append(selectedTabName).append(" ");
+        });
+        log.info(stringBuilder.toString());
     }
 }

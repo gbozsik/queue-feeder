@@ -1,47 +1,14 @@
 package queuefeeder.producer;
 
-import lombok.Getter;
+import queuefeeder.FeedingParams;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class MessageProducerHandlerImpl implements MessageProducerHandler {
 
-    private final int numberOfThreads;
-    private final ArrayBlockingQueue<String> arrayBlockingQueue;
-    private final String poisonPill;
-    private final int messagesPerMessageType;
-    @Getter
-    private List<Character> prefixes;
-
-    public MessageProducerHandlerImpl(int numberOfThreads, ArrayBlockingQueue<String> arrayBlockingQueue, int messagesPerMessageType, String poisonPill) {
-        this.numberOfThreads = numberOfThreads;
-        this.arrayBlockingQueue = arrayBlockingQueue;
-        this.poisonPill = poisonPill;
-        this.messagesPerMessageType = messagesPerMessageType;
-    }
-
-    public void produceMessages() {
-        prefixes = getPrefixList(numberOfThreads);
-        List<MessageProducer> messageProducers = getMessageProducers();
-        startProducerThreads(messageProducers);
-    }
-
-    private List<MessageProducer> getMessageProducers() {
-        List<MessageProducer> messageProducers = new ArrayList<>();
-        for (Character prefix : prefixes) {
-            messageProducers.add(new MessageProducer(prefix, arrayBlockingQueue, messagesPerMessageType, poisonPill));
-        }
-        return messageProducers;
-    }
-
-    private void startProducerThreads(List<MessageProducer> messageProducers) {
-        MessageProducerExecutorService messageProducerExecutorService = new MessageProducerExecutorService();
-        messageProducerExecutorService.startProcessorsOnDifferentThreads(messageProducers);
-    }
-
-    List<Character> getPrefixList(int numberOfThreads) {
+    @Override
+    public List<Character> getPrefixesCharList(int numberOfThreads) {
         List<Character> prefixes = new ArrayList<>();
         if (numberOfThreads > 26) {
             throw new IllegalArgumentException("Threads maximum number is 26");
@@ -52,4 +19,21 @@ public class MessageProducerHandlerImpl implements MessageProducerHandler {
         }
         return prefixes;
     }
+
+    @Override
+    public List<MessageProducer> getMessageProducers(List<Character> prefixes, FeedingParams feedingParams) {
+        List<MessageProducer> messageProducers = new ArrayList<>();
+        for (Character prefix : prefixes) {
+            messageProducers.add(new MessageProducer(prefix, feedingParams.getArrayBlockingQueue(),
+                    feedingParams.getMessagesPerMessageType(), feedingParams.getPoisonPill()));
+        }
+        return messageProducers;
+    }
+
+    @Override
+    public void startProducerThreads(List<MessageProducer> messageProducers) {
+        MessageProducerExecutorService messageProducerExecutorService = new MessageProducerExecutorService();
+        messageProducerExecutorService.startProcessorsOnDifferentThreads(messageProducers);
+    }
+
 }

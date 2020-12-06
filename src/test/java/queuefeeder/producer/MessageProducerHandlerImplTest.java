@@ -11,11 +11,11 @@ public class MessageProducerHandlerImplTest {
 
     int numberOfThreads = 5;
     ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(7);
-    MessageProducerHandlerImpl messageProducerHandlerImpl = new MessageProducerHandlerImpl(numberOfThreads, arrayBlockingQueue, 5, "poisonPill");
+    MessageProducerHandlerImpl messageProducerHandlerImpl = new MessageProducerHandlerImpl();
 
     @Test
     public void getPrefixList() {
-        List<Character> prefixes = messageProducerHandlerImpl.getPrefixList(numberOfThreads);
+        List<Character> prefixes = messageProducerHandlerImpl.getPrefixesCharList(numberOfThreads);
 
         assertEquals(numberOfThreads, prefixes.size());
         assertEquals(Character.valueOf('A'), prefixes.get(0));
@@ -27,7 +27,7 @@ public class MessageProducerHandlerImplTest {
 
     @Test
     public void getPrefixList_zero_thread() {
-        List<Character> prefixes = messageProducerHandlerImpl.getPrefixList(0);
+        List<Character> prefixes = messageProducerHandlerImpl.getPrefixesCharList(0);
 
         assertEquals(0, prefixes.size());
     }
