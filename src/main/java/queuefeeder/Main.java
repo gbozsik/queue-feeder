@@ -25,7 +25,7 @@ public class Main {
         ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(arrayBlockingQueueCapacity);
         LinkedBlockingQueue<String> linkedBlockingQueue = new LinkedBlockingQueue<>();
 
-        MessageProducerService messageProducerService = new MessageProducerServiceImpl();
+        MessageProducerService messageProducerService = MessageProducerService.getMessageProducerService();
         Dispatcher dispatcher = new DispatcherImpl();
         MessageProcessorService messageProcessorService = new MessageProcessorServiceImpl();
 

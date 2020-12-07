@@ -6,6 +6,9 @@ import java.util.List;
 
 public interface MessageProducerService {
 
+    static MessageProducerService getMessageProducerService() {
+        return new MessageProducerServiceImpl();
+    }
     List<Character> getPrefixesCharList(int numberOfThreads);
 
     List<MessageProducer> getMessageProducers(List<Character> prefixes, FeedingParams feedingParams);

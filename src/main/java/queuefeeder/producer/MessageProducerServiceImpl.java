@@ -7,6 +7,9 @@ import java.util.List;
 
 public class MessageProducerServiceImpl implements MessageProducerService {
 
+    MessageProducerServiceImpl() {
+    }
+
     @Override
     public List<Character> getPrefixesCharList(int numberOfThreads) {
         List<Character> prefixes = new ArrayList<>();
