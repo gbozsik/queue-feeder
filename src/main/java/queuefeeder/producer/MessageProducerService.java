@@ -3,9 +3,8 @@ package queuefeeder.producer;
 import queuefeeder.FeedingParams;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
-public interface MessageProducerHandler {
+public interface MessageProducerService {
 
     List<Character> getPrefixesCharList(int numberOfThreads);
 

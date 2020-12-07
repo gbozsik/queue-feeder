@@ -3,10 +3,10 @@ package queuefeeder;
 import lombok.extern.slf4j.Slf4j;
 import queuefeeder.dispatcher.Dispatcher;
 import queuefeeder.dispatcher.DispatcherImpl;
-import queuefeeder.processor.MessageProcessorProvider;
-import queuefeeder.processor.MessageProcessorProviderImpl;
-import queuefeeder.producer.MessageProducerHandler;
-import queuefeeder.producer.MessageProducerHandlerImpl;
+import queuefeeder.processor.MessageProcessorService;
+import queuefeeder.processor.MessageProcessorServiceImpl;
+import queuefeeder.producer.MessageProducerService;
+import queuefeeder.producer.MessageProducerServiceImpl;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,9 +25,9 @@ public class Main {
         ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(arrayBlockingQueueCapacity);
         LinkedBlockingQueue<String> linkedBlockingQueue = new LinkedBlockingQueue<>();
 
-        MessageProducerHandler messageProducerHandler = new MessageProducerHandlerImpl();
+        MessageProducerService messageProducerService = new MessageProducerServiceImpl();
         Dispatcher dispatcher = new DispatcherImpl();
-        MessageProcessorProvider messageProcessorProvider = new MessageProcessorProviderImpl();
+        MessageProcessorService messageProcessorService = new MessageProcessorServiceImpl();
 
         FeedingParams feedingParams = FeedingParams.builder()
                 .numberOfMessageProducer(numberOfMessageProducer)
@@ -38,7 +38,7 @@ public class Main {
                 .linkedBlockingQueue(linkedBlockingQueue)
                 .build();
 
-        QueueFeeder queueFeeder = new QueueFeeder(messageProducerHandler, dispatcher, messageProcessorProvider);
+        QueueFeeder queueFeeder = new QueueFeeder(messageProducerService, dispatcher, messageProcessorService);
         queueFeeder.feed(feedingParams);
         dumpResults(linkedBlockingQueue);
     }

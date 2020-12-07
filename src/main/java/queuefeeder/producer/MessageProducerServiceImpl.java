@@ -5,7 +5,7 @@ import queuefeeder.FeedingParams;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageProducerHandlerImpl implements MessageProducerHandler {
+public class MessageProducerServiceImpl implements MessageProducerService {
 
     @Override
     public List<Character> getPrefixesCharList(int numberOfThreads) {

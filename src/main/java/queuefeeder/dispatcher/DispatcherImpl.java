@@ -13,9 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class DispatcherImpl implements Dispatcher {
 
-    public DispatcherImpl() {
-    }
-
     @Override
     public void dispatch(FeedingParams feedingParams, List<MessageProcessor> messageProcessors) {
         int countOfPoisonPill = 0;

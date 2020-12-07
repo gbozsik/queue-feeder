@@ -7,15 +7,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 
-public class MessageProducerHandlerImplTest {
+public class MessageProducerServiceImplTest {
 
     int numberOfThreads = 5;
-    ArrayBlockingQueue<String> arrayBlockingQueue = new ArrayBlockingQueue<>(7);
-    MessageProducerHandlerImpl messageProducerHandlerImpl = new MessageProducerHandlerImpl();
+    MessageProducerService messageProducerService = new MessageProducerServiceImpl();
 
     @Test
     public void getPrefixList() {
-        List<Character> prefixes = messageProducerHandlerImpl.getPrefixesCharList(numberOfThreads);
+        List<Character> prefixes = messageProducerService.getPrefixesCharList(numberOfThreads);
 
         assertEquals(numberOfThreads, prefixes.size());
         assertEquals(Character.valueOf('A'), prefixes.get(0));
@@ -27,7 +26,7 @@ public class MessageProducerHandlerImplTest {
 
     @Test
     public void getPrefixList_zero_thread() {
-        List<Character> prefixes = messageProducerHandlerImpl.getPrefixesCharList(0);
+        List<Character> prefixes = messageProducerService.getPrefixesCharList(0);
 
         assertEquals(0, prefixes.size());
     }

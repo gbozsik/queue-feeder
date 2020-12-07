@@ -8,12 +8,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class MessageProcessorProviderImplTest {
+public class MessageProcessorServiceImplTest {
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    private MessageProcessorProviderImpl messageProcessorProvider = new MessageProcessorProviderImpl();
+    private MessageProcessorServiceImpl messageProcessorProvider = new MessageProcessorServiceImpl();
 
     @Test
     public void getMessageProcessorList() {

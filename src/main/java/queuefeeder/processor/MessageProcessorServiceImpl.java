@@ -3,7 +3,7 @@ package queuefeeder.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageProcessorProviderImpl implements MessageProcessorProvider {
+public class MessageProcessorServiceImpl implements MessageProcessorService {
 
     public List<MessageProcessor> getMessageProcessorList(int numberOfMessageProcessors, List<Character> messageTypes) {
         List<Integer> messageTypeQuantityPerProcessList = getMessageTypeQuantityPerProcessList(messageTypes.size(), numberOfMessageProcessors);

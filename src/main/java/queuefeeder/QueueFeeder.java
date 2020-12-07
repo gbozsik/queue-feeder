@@ -3,25 +3,23 @@ package queuefeeder;
 import lombok.extern.slf4j.Slf4j;
 import queuefeeder.dispatcher.Dispatcher;
 import queuefeeder.processor.MessageProcessor;
-import queuefeeder.processor.MessageProcessorProvider;
+import queuefeeder.processor.MessageProcessorService;
 import queuefeeder.producer.MessageProducer;
-import queuefeeder.producer.MessageProducerHandler;
+import queuefeeder.producer.MessageProducerService;
 
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class QueueFeeder {
 
     private final Dispatcher dispatcher;
-    private final MessageProducerHandler messageProducerHandler;
-    private final MessageProcessorProvider messageProcessorProvider;
+    private final MessageProducerService messageProducerService;
+    private final MessageProcessorService messageProcessorService;
 
-    public QueueFeeder(MessageProducerHandler messageProducerHandler, Dispatcher dispatcher, MessageProcessorProvider messageProcessorProvider) {
-        this.messageProducerHandler = messageProducerHandler;
+    public QueueFeeder(MessageProducerService messageProducerService, Dispatcher dispatcher, MessageProcessorService messageProcessorService) {
+        this.messageProducerService = messageProducerService;
         this.dispatcher = dispatcher;
-        this.messageProcessorProvider = messageProcessorProvider;
+        this.messageProcessorService = messageProcessorService;
     }
 
     void feed(FeedingParams feedingParams) {
@@ -32,14 +30,15 @@ public class QueueFeeder {
             throw new IllegalArgumentException("NumberOfMessageProducer can not be 0");
         }
 
-        List<Character> messageTypes = messageProducerHandler.getPrefixesCharList(feedingParams.getNumberOfMessageProducer());
-        List<MessageProducer> messageProducers = messageProducerHandler.getMessageProducers(messageTypes, feedingParams);
-        messageProducerHandler.startProducerThreads(messageProducers);
+        List<Character> messageTypes = messageProducerService.getPrefixesCharList(feedingParams.getNumberOfMessageProducer());
+        List<MessageProducer> messageProducers = messageProducerService.getMessageProducers(messageTypes, feedingParams);
+        messageProducerService.startProducerThreads(messageProducers);
 
-        List<MessageProcessor> messageProcessors = messageProcessorProvider.getMessageProcessorList(feedingParams.getNumberOfMessageProcessor(), messageTypes);
+        List<MessageProcessor> messageProcessors = messageProcessorService.getMessageProcessorList(feedingParams.getNumberOfMessageProcessor(), messageTypes);
 
         dispatcher.dispatch(feedingParams, messageProcessors);
-
+        messageProcessors.forEach(messageProcessor -> log.info(String.format("Processor %s - processed %s times.",
+                messageProcessor.getPrefixesInString(), messageProcessor.getProcessedMessageCount())));
         log.info("Feeding has been finished");
     }
 }
