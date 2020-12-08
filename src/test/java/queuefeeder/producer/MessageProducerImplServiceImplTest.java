@@ -1,13 +1,14 @@
 package queuefeeder.producer;
 
 import org.junit.Test;
+import queuefeeder.producer.service.MessageProducerService;
+import queuefeeder.producer.service.MessageProducerServiceImpl;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 
-public class MessageProducerServiceImplTest {
+public class MessageProducerImplServiceImplTest {
 
     int numberOfThreads = 5;
     MessageProducerService messageProducerService = new MessageProducerServiceImpl();

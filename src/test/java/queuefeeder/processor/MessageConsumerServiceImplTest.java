@@ -3,22 +3,23 @@ package queuefeeder.processor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import queuefeeder.processor.service.MessageConsumerServiceImpl;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class MessageProcessorServiceImplTest {
+public class MessageConsumerServiceImplTest {
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    private MessageProcessorServiceImpl messageProcessorProvider = new MessageProcessorServiceImpl();
+    private MessageConsumerServiceImpl messageProcessorProvider = new MessageConsumerServiceImpl();
 
     @Test
     public void getMessageProcessorList() {
         List<Character> messageTypes = List.of('A', 'B', 'C', 'D', 'E');
-        List<MessageProcessor> messageProcessors = messageProcessorProvider.getMessageProcessorList(2, messageTypes);
+        List<MessageProcessor> messageProcessors = messageProcessorProvider.getMessageConsumerExecutorList(2);
 
         assertEquals(2, messageProcessors.size());
         assertEquals("A, B, ", messageProcessors.get(0).getPrefixesInString());

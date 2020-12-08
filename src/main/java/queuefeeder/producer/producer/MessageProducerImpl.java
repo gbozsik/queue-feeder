@@ -1,18 +1,19 @@
-package queuefeeder.producer;
+package queuefeeder.producer.producer;
 
 import lombok.extern.slf4j.Slf4j;
+import queuefeeder.producer.generator.MessageGenerator;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
 @Slf4j
-public class MessageProducer implements Runnable {
+public class MessageProducerImpl implements MessageProducer<String> {
 
     private final char prefix;
     private final ArrayBlockingQueue<String> arrayBlockingQueue;
     private final String poisonPill;
     private final int messagesPerMessageType;
 
-    public MessageProducer(char prefix, ArrayBlockingQueue<String> arrayBlockingQueue, int messagesPerMessageType, String poisonPill) {
+    public MessageProducerImpl(char prefix, ArrayBlockingQueue<String> arrayBlockingQueue, int messagesPerMessageType, String poisonPill) {
         this.prefix = prefix;
         this.arrayBlockingQueue = arrayBlockingQueue;
         this.poisonPill = poisonPill;
@@ -21,11 +22,12 @@ public class MessageProducer implements Runnable {
 
     @Override
     public void run() {
+        log.info("Thread of producer: " + Thread.currentThread().getName());
         log.info("Message producer: " + prefix + " started");
-        MessageGenerator messageGenerator = new MessageGenerator(prefix);
+        MessageGenerator<String> messageGenerator = MessageGenerator.getStringMessageGenerator(prefix);
         try {
-            for (int suffix = 0; suffix < messagesPerMessageType; suffix++) {
-                arrayBlockingQueue.put(messageGenerator.getMessage(suffix));
+            for (int i = 0; i < messagesPerMessageType; i++) {
+                arrayBlockingQueue.put(messageGenerator.getMessage());
             }
             log.info("producer " + prefix + " sending poison");
             arrayBlockingQueue.put(poisonPill);
